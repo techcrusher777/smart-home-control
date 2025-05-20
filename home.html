@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LG Smart Home Control System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <img src="https://imgs.search.brave.com/Sq-dH5vtRYPYfIyM7Z3rJc9J-xtCXA5dhDXxgeBb6Uw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wbmdp/bWcuY29tL3VwbG9h/ZHMvbGdfbG9nby9s/Z19sb2dvX1BORzku/cG5n" alt="LG Logo" class="logo">
+                <h1>LG Smart Home Control System</h1>
+            </div>
+            <div class="auth-section">
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+                <button onclick="login()">Login</button>
+            </div>
+        </header>
+
+        <!-- Welcome Note -->
+        <div class="welcome-note">
+            <h2>Welcome to Your Smart Home</h2>
+            <p>Control your LG appliances with ease. Monitor energy consumption, adjust temperatures, and manage your home efficiently.</p>
+        </div>
+
+        <main class="dashboard">
+            <div class="appliance-grid">
+                <!-- Air Conditioner Control -->
+                <div class="appliance-card">
+                    <div class="card-header">
+                        <i class="fas fa-snowflake"></i>
+                        <h2>Air Conditioner</h2>
+                    </div>
+                    <div class="status">Status: <span id="ac-status">OFF</span></div>
+                    <div class="temperature">
+                        <label>Temperature: <span id="ac-temp">25°C</span></label>
+                        <input type="range" id="ac-temp-slider" min="16" max="30" value="25">
+                    </div>
+                    <div class="controls">
+                        <button onclick="toggleAppliance('ac')">Power</button>
+                        <button onclick="setMode('ac', 'cool')">Cool</button>
+                        <button onclick="setMode('ac', 'heat')">Heat</button>
+                    </div>
+                </div>
+
+                <!-- Refrigerator Control -->
+                <div class="appliance-card">
+                    <div class="card-header">
+                        <i class="fas fa-temperature-low"></i>
+                        <h2>Refrigerator</h2>
+                    </div>
+                    <div class="status">Status: <span id="fridge-status">ON</span></div>
+                    <div class="temperature">
+                        <label>Temperature: <span id="fridge-temp">4°C</span></label>
+                        <input type="range" id="fridge-temp-slider" min="2" max="8" value="4">
+                    </div>
+                    <div class="controls">
+                        <button onclick="toggleAppliance('fridge')">Power</button>
+                        <button onclick="setMode('fridge', 'eco')">Eco Mode</button>
+                    </div>
+                </div>
+
+                <!-- Washing Machine Control -->
+                <div class="appliance-card">
+                    <div class="card-header">
+                        <i class="fas fa-tshirt"></i>
+                        <h2>Washing Machine</h2>
+                    </div>
+                    <div class="status">Status: <span id="washer-status">OFF</span></div>
+                    <div class="controls">
+                        <button onclick="toggleAppliance('washer')">Power</button>
+                        <select id="washer-mode" onchange="setWasherMode()">
+                            <option value="normal">Normal Wash</option>
+                            <option value="quick">Quick Wash</option>
+                            <option value="eco">Eco Wash</option>
+                            <option value="heavy">Heavy Duty</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="appliance-card system-status">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h2>System Status</h2>
+                    </div>
+                    <div class="status-item">
+                        <span>Power Consumption:</span>
+                        <span id="power-consumption">0.0 kWh</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Network Status:</span>
+                        <span id="network-status">Connected</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Last Update:</span>
+                        <span id="last-update">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- Power Consumption Graph -->
+                <div class="appliance-card graph-card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar"></i>
+                        <h2>Power Consumption Analysis</h2>
+                    </div>
+                    <div class="graph-controls">
+                        <select id="timeRange" onchange="updateGraph()">
+                            <option value="day">Last 24 Hours</option>
+                            <option value="week">Last 7 Days</option>
+                            <option value="month">Last 30 Days</option>
+                        </select>
+                        <button onclick="toggleEcoMode()" id="ecoModeBtn">
+                            <i class="fas fa-leaf"></i> Toggle Eco Mode
+                        </button>
+                    </div>
+                    <div class="graph-container">
+                        <canvas id="powerConsumptionChart"></canvas>
+                    </div>
+                    <div class="savings-summary">
+                        <div class="savings-item">
+                            <span>Total Consumption:</span>
+                            <span id="totalConsumption">0 kWh</span>
+                        </div>
+                        <div class="savings-item">
+                            <span>Energy Saved:</span>
+                            <span id="energySaved">0 kWh</span>
+                        </div>
+                        <div class="savings-item">
+                            <span>Cost Saved:</span>
+                            <span id="costSaved">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Query Support -->
+                <div class="appliance-card support-card">
+                    <div class="card-header">
+                        <i class="fas fa-headset"></i>
+                        <h2>Support & Help</h2>
+                    </div>
+                    <div class="support-content">
+                        <div class="support-item">
+                            <h3>Quick Help</h3>
+                            <ul>
+                                <li><i class="fas fa-question-circle"></i> How to use the system</li>
+                                <li><i class="fas fa-book"></i> User manual</li>
+                                <li><i class="fas fa-tools"></i> Troubleshooting guide</li>
+                            </ul>
+                        </div>
+                        <div class="support-item">
+                            <h3>Contact Support</h3>
+                            <button onclick="openSupportChat()" class="support-button">
+                                <i class="fas fa-comments"></i> Start Chat
+                            </button>
+                            <button onclick="openSupportTicket()" class="support-button">
+                                <i class="fas fa-ticket-alt"></i> Create Ticket
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Energy Tips -->
+                <div class="appliance-card tips-card">
+                    <div class="card-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h2>Energy Saving Tips</h2>
+                    </div>
+                    <div class="tips-content">
+                        <ul>
+                            <li>Set AC temperature to 25°C for optimal efficiency</li>
+                            <li>Use eco mode for washing machine when possible</li>
+                            <li>Keep refrigerator door closed to maintain temperature</li>
+                            <li>Enable eco mode for overall energy savings</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simulated backend communication
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // In a real system, this would communicate with the C backend
+            if (username && password) {
+                alert('Login successful!');
+            } else {
+                alert('Please enter credentials');
+            }
+        }
+
+        function toggleAppliance(appliance) {
+            const statusElement = document.getElementById(`${appliance}-status`);
+            const currentStatus = statusElement.textContent;
+            const newStatus = currentStatus === 'ON' ? 'OFF' : 'ON';
+            updateStatusWithAnimation(`${appliance}-status`, newStatus);
+            updateLastUpdate();
+        }
+
+        function setMode(appliance, mode) {
+            // In a real system, this would send commands to the C backend
+            alert(`${appliance.toUpperCase()} mode set to: ${mode}`);
+            updateLastUpdate();
+        }
+
+        function setWasherMode() {
+            const mode = document.getElementById('washer-mode').value;
+            setMode('washer', mode);
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            document.getElementById('last-update').textContent = 
+                now.toLocaleTimeString();
+        }
+
+        // Temperature slider handlers
+        document.getElementById('ac-temp-slider').addEventListener('input', function(e) {
+            document.getElementById('ac-temp').textContent = `${e.target.value}°C`;
+            updateLastUpdate();
+        });
+
+        document.getElementById('fridge-temp-slider').addEventListener('input', function(e) {
+            document.getElementById('fridge-temp').textContent = `${e.target.value}°C`;
+            updateLastUpdate();
+        });
+
+        // New support functions
+        function openSupportChat() {
+            alert('Support chat will open in a new window. This is a simulation.');
+        }
+
+        function openSupportTicket() {
+            alert('Support ticket system will open in a new window. This is a simulation.');
+        }
+
+        // Add smooth transitions for status updates
+        function updateStatusWithAnimation(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.textContent = newValue;
+                element.style.opacity = '1';
+            }, 200);
+        }
+
+        // Power Consumption Graph Implementation
+        let powerChart;
+        let isEcoMode = false;
+        const powerData = {
+            labels: [],
+            consumption: [],
+            savings: []
+        };
+
+        // Initialize the graph
+        function initializePowerGraph() {
+            const ctx = document.getElementById('powerConsumptionChart').getContext('2d');
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: powerData.labels,
+                    datasets: [
+                        {
+                            label: 'Power Consumption',
+                            data: powerData.consumption,
+                            borderColor: 'var(--primary-red)',
+                            backgroundColor: 'rgba(230, 0, 18, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Energy Savings',
+                            data: powerData.savings,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Power Consumption vs Savings'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'kWh'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate sample data (in a real system, this would come from the backend)
+        function generatePowerData(timeRange) {
+            const now = new Date();
+            const dataPoints = timeRange === 'day' ? 24 : timeRange === 'week' ? 7 : 30;
+            const labels = [];
+            const consumption = [];
+            const savings = [];
+
+            for (let i = 0; i < dataPoints; i++) {
+                const time = new Date(now - (dataPoints - i) * (timeRange === 'day' ? 3600000 : 86400000));
+                labels.push(timeRange === 'day' ? time.getHours() + ':00' : time.toLocaleDateString());
+                
+                // Generate random consumption data (0.5 to 2.5 kWh)
+                const baseConsumption = 0.5 + Math.random() * 2;
+                consumption.push(parseFloat(baseConsumption.toFixed(2)));
+                
+                // Calculate savings (20% of consumption in eco mode)
+                const saving = isEcoMode ? baseConsumption * 0.2 : 0;
+                savings.push(parseFloat(saving.toFixed(2)));
+            }
+
+            return { labels, consumption, savings };
+        }
+
+        // Update the graph with new data
+        function updateGraph() {
+            const timeRange = document.getElementById('timeRange').value;
+            const data = generatePowerData(timeRange);
+            
+            powerData.labels = data.labels;
+            powerData.consumption = data.consumption;
+            powerData.savings = data.savings;
+
+            powerChart.data.labels = data.labels;
+            powerChart.data.datasets[0].data = data.consumption;
+            powerChart.data.datasets[1].data = data.savings;
+            powerChart.update();
+
+            updateSavingsSummary(data);
+        }
+
+        // Update savings summary
+        function updateSavingsSummary(data) {
+            const totalConsumption = data.consumption.reduce((a, b) => a + b, 0);
+            const totalSavings = data.savings.reduce((a, b) => a + b, 0);
+            const costPerKWh = 0.12; // Example rate: $0.12 per kWh
+
+            document.getElementById('totalConsumption').textContent = `${totalConsumption.toFixed(2)} kWh`;
+            document.getElementById('energySaved').textContent = `${totalSavings.toFixed(2)} kWh`;
+            document.getElementById('costSaved').textContent = `$${(totalSavings * costPerKWh).toFixed(2)}`;
+        }
+
+        // Toggle eco mode
+        function toggleEcoMode() {
+            isEcoMode = !isEcoMode;
+            const ecoBtn = document.getElementById('ecoModeBtn');
+            ecoBtn.style.backgroundColor = isEcoMode ? '#28a745' : 'var(--primary-red)';
+            updateGraph();
+        }
+
+        // Initialize graph when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePowerGraph();
+            updateGraph();
+        });
+
+        // Update graph periodically (every 5 minutes)
+        setInterval(updateGraph, 300000);
+    </script>
+</body>
+</html>
