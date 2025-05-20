@@ -43,15 +43,15 @@ A comprehensive smart home control system for LG appliances, designed for embedd
 4. 🖼️ Preview
 
  Web Interface
-![Web Interface](docs/images/web-interface.png)
+![Web Interface]
 *Modern, responsive web interface for controlling appliances*
 
  Power Consumption Graph
-![Power Graph](docs/images/power-graph.png)
+![Power Graph]
 *Interactive power consumption and savings visualization*
 
  Appliance Control
-![Appliance Control](docs/images/appliance-control.png)
+![Appliance Control]
 *Individual appliance control cards with real-time status*
 
 4. 📁 Project Structure
